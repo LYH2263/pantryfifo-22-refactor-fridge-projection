@@ -14,11 +14,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '../api'
+import { refreshAlerts } from '../store'
 const rows = ref([])
 const layers = ['upper','mid','lower']
 const label = { upper: '上层', mid: '中层', lower: '下层' }
 function by(L) { return rows.value.filter(r => r.layer === L) }
-async function load() { rows.value = await api('/fridge') }
-async function sweep() { await api('/expire-sweep', { method: 'POST', body: '{}' }); await load() }
+// Full-shelf columns read only the projection endpoint — no client-side JOIN.
+async function load() { rows.value = await api('/projection/shelf') }
+async function sweep() {
+  await api('/expire-sweep', { method: 'POST', body: '{}' })
+  await Promise.all([load(), refreshAlerts()])
+}
 onMounted(load)
 </script>

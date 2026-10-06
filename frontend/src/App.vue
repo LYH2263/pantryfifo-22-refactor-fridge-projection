@@ -17,8 +17,12 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
-import { api } from './api'
-const alerts = ref([])
-onMounted(async () => { try { alerts.value = await api('/alerts') } catch { alerts.value = [] } })
+import { onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { alerts, refreshAlerts } from './store'
+// Re-derive the urgent set from the projection on first paint and after each
+// navigation back to a page, so it never lags a successful write.
+const route = useRoute()
+onMounted(refreshAlerts)
+watch(() => route.path, refreshAlerts)
 </script>

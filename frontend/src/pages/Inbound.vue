@@ -10,6 +10,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '../api'
+import { refreshAlerts } from '../store'
 const items = ref([])
 const item_id = ref(1)
 const qty = ref(1)
@@ -17,6 +18,7 @@ const expiry = ref('2026-12-01')
 onMounted(async () => { items.value = await api('/items'); if (items.value[0]) item_id.value = items.value[0].id })
 async function go() {
   await api('/lots', { method: 'POST', body: JSON.stringify({ item_id: item_id.value, qty: qty.value, expiry: expiry.value }) })
+  await refreshAlerts()
   alert('已入库')
 }
 </script>

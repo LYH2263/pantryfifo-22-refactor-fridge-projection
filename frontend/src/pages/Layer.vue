@@ -9,7 +9,9 @@ import { ref, watch, onMounted } from 'vue'
 import { api } from '../api'
 const props = defineProps({ layer: String })
 const rows = ref([])
-async function load() { rows.value = await api('/fridge?layer=' + props.layer) }
+// Layer page reads the same projection endpoint as the full-shelf page, only
+// filtered server-side by layer — same strategy, same numbers.
+async function load() { rows.value = await api('/projection/shelf?layer=' + props.layer) }
 watch(() => props.layer, load)
 onMounted(load)
 </script>
